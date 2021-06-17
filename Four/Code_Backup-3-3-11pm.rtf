@@ -1,0 +1,183 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf200
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 import numpy as np\
+from sklearn.naive_bayes import GaussianNB\
+from sklearn.model_selection import KFold\
+from google.colab import drive\
+drive.mount('/content/gdrive')\
+\
+#########################################################\
+# formatData function:\
+# the data is arranged with the labels in the \
+# last position and the features in all of the \
+# preceding positions\
+# This function reads the data\
+# and returns the attributes and labels\
+# as separate arrays:\
+\
+\
+def formatData (Data):\
+  X = []\
+  y = []\
+\
+  for i in range (len(Data)):\
+    y.append (Data[i][-1])\
+    X.append (Data[i][:-1])\
+\
+  return X, y\
+\
+# end formatData function\
+#########################################################\
+\
+#########################################################\
+# myKFolds function:\
+# divides the list into K, mostly equal parts\
+# and returns a list with all of the indexes\
+\
+def myKFolds (theSize, theK):\
+  theList = []\
+  spacing = theSize / theK\
+\
+  for i in range (theK - 1):\
+    theList.append([i*spacing, i*spacing + spacing - 1])\
+\
+  theList.append([(theK - 1) * spacing, theSize - 1])\
+\
+  return theList\
+\
+#\
+#########################################################\
+\
+#########################################################\
+# \
+\
+def myKFolds (theSize, theK):\
+  theList = []\
+  spacing = int (theSize / theK)\
+  \
+  for i in range (theK - 1):\
+    theList.append([i * spacing, i * spacing + spacing - 1])\
+  \
+  theList.append([(theK - 1) * spacing, theSize - 1])\
+  \
+  return theList\
+\
+# \
+#########################################################\
+\
+\
+\
+#########################################################\
+# Main function:\
+\
+if __name__ == "__main__":\
+  \
+    # Read data from file:\
+    \
+  Data = np.loadtxt(fname='/content/gdrive/My Drive/437/HW4/smarthome.csv', delimiter=',')\
+  \
+    # format the data:\
+    \
+  X, y = formatData (Data)\
+\
+  clf = GaussianNB()\
+  \
+  # use 10-folds:\
+  \
+  numFolds = 10\
+  \
+  '''\
+  #########################################################\
+  # Use KFold library:\
+\
+  kf = KFold(n_splits=10)\
+  kf.get_n_splits(X)\
+\
+\
+  for train_index, test_index in kf.split(X):\
+    # set first value to first element:\
+    trainData = X[0:1]\
+    trainLabel = y[0:1]\
+\
+    for i in range (1, len(train_index)):\
+      if i % 10000 == 0:\
+        print ("i: ", i)\
+      trainData = np.concatenate ((trainData, X[train_index[i]:train_index[i]+1]), axis=0)\
+      trainLabel = np.concatenate ((trainLabel, y[train_index[i]:train_index[i]+1]), axis=0)\
+  '''\
+\
+  myList = myKFolds (len(X), numFolds)\
+  \
+  #print ("myList[0][0]: ", myList[0][0])\
+  #print ("myList[0][1]: ", myList[0][1])\
+  for i in range (len(myList)):\
+    #print ("test Range: ", myList[i][0], " - ", myList[i][1])\
+    testData = X[myList[i][0]:myList[i][1] + 1]\
+    testLabel = y[myList[i][0]:myList[i][1] + 1]\
+    \
+      # initialize trainset with i + 1 % len(list)\
+      # to get the next index in a circular array:\
+      \
+    #print ("train Range 0: ", myList[(i + 1) % len(myList)][0], " - ", myList[(i + 1) % len(myList)][1])\
+    trainData = X[myList[(i + 1) % len(myList)][0]:myList[(i + 1) % len(myList)][1] + 1]\
+    trainLabel = y[myList[(i + 1) % len(myList)][0]:myList[(i + 1) % len(myList)][1] + 1]\
+    \
+      # now, concatenate remaining indexes that are not the test index\
+    \
+    for j in range (1, len(myList) - 1):\
+      #print ("i: ", i, "  - j: ", j, "  - len(myList): ", len(myList), "  - (i + 1 + j) % len(myList): ", (i + 1 + j) % len(myList))\
+      #print ("myList[i + 1 + j % len(myList)][0]: ", myList[(i + 1 + j) % len(myList)][0])\
+      #print ("myList[i + 1 + j % len(myList)][1] + 1]: ", myList[(i + 1 + j) % len(myList)][1] + 1)\
+      #print ("train Range ", j, ": ", myList[(i + 1 + j) % len(myList)][0], " - ", myList[(i + 1 + j) % len(myList)][1])\
+      trainData = np.concatenate ((trainData, X[myList[(i + 1 + j) % len(myList)][0]:myList[(i + 1 + j) % len(myList)][1] + 1]), axis=0)\
+      trainLabel = np.concatenate ((trainLabel, y[myList[(i + 1 + j) % len(myList)][0]:myList[(i + 1 + j) % len(myList)][1] + 1]), axis=0)\
+  \
+    clf.fit(trainData,trainLabel)\
+\
+    correct = 0\
+\
+    '''\
+    for index in test_index:\
+      if (clf.predict ( [X[index]]) ) == y[index]:\
+        correct += 1\
+    '''\
+\
+    for testIndex in range (len(testData)):\
+      if (clf.predict ( [testData[testIndex]]) ) == testLabel[testIndex]:\
+        correct += 1\
+\
+    print ("Accuracy: ", 100 * (float (correct) / len(testData) ) )\
+\
+    \
+  '''\
+    # Run manually:\
+    \
+  trainData = X[0:5133]\
+  trainLabel = y[0:5133]\
+\
+  trainData = np.concatenate ((trainData, X[10266:51337]), axis=0)\
+  trainLabel = np.concatenate ((trainLabel, y[10266:51337]), axis=0)\
+  \
+  testData = X[5133:10266]\
+  testLabel = y[5133:10266]\
+\
+  clf.fit (trainData, trainLabel)\
+\
+  correct = 0\
+\
+  for i in range (len(testData)):\
+    if clf.predict([testData[i]]) == testLabel[i]:\
+      correct += 1\
+\
+  print ("Accuracy: ", 100 * (float (correct) / len(testData) ) )\
+  '''\
+\
+  \
+# end Main function  \
+#########################################################\
+  }

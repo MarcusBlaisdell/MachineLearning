@@ -1,0 +1,15 @@
+%% dataset for problem 2
+
+@relation colors
+@attribute coordinate_x numeric
+@attribute coordinate_y numeric
+@attribute 'color' {'red', 'blue'}
+
+@data
+0, 1, red
+2, 3, red
+4, 4, red
+2, 0, blue
+5, 2, blue
+6, 3, blue
+
