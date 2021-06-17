@@ -1,0 +1,73 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf200
+{\fonttbl\f0\froman\fcharset0 Times-Roman;\f1\fnil\fcharset0 Tahoma;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue233;\red255\green255\blue255;
+}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\cssrgb\c0\c0\c93333;\cssrgb\c100000\c100000\c100000;
+}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab720
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f0\fs24 \cf2 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Hello Dr. Cook,\
+\uc0\u8232 \
+I want to check my understanding on Question 1 from Homework 6.\
+\uc0\u8232 \
+My work is here:\
+\pard\pardeftab720\sl280\partightenfactor0
+{\field{\*\fldinst{HYPERLINK "https://docs.google.com/document/d/1eTqM9c0NTMczDPGfcbduuIVuW9cJjcHVRwXjdkbLtLo/edit?usp=sharing"}}{\fldrslt \cf3 \ul \ulc3 \strokec3 https://docs.google.com/document/d/1eTqM9c0NTMczDPGfcbduuIVuW9cJjcHVRwXjdkbLtLo/edit?usp=sharing}}\
+\uc0\u8232 \
+I applied the formula provided in lecture to calculate the values at all the positions.\
+\uc0\u8232 \
+I am skeptical though about getting a value of 7.6 in position (2,2) at V_2 and I'm concerned I'm not calculating this properly and so I would appreciate your feedback.\
+\uc0\u8232 \
+Thank you for your help,\
+\uc0\u8232 \
+Marcus Blaisdell\
+\
+\
+==\
+\
+Marcus,\
+\uc0\u8232 \
+\'a0\'a0 Let me refine the initial interpretation of rewards a bit. Instead of the current interpretation, lets assume that a reward is received when leaving an exit state (transitioning from the exit state to out of the game).\uc0\u8232 \
+\uc0\u8232 \
+\'a0\'a0 As you show, iteration 0 all states have value 0. No actions have been considered and rewards accounted for.\
+Iteration 1, the exit action is considered from exit states. This is an immediate reward (no discount) and there are no subsequent states to consider. I agree with your choice of +5 and -5 for the exit states. However, no other states should be updated on this iteration.\uc0\u8232 \
+Iteration 2, states more than one step away from an exit state will not have a value change. Exit states will not experience a value change. There are two states adjacent to exit states: (1,2) and (2,2). In each case, consider the maximum-value action from that state. These two states should be updated using the value iteration formula in the slides. For the maximum-value action (in one of the cases this is probably the action that leads to the +5 exit state, consider each of the states that could result from the action (there are three possible outcomes given the transition function). For each outcome, multiple the probability of ending up in that state with the sum of the immediate reward (none if not an exit state) and the discounted value of the resulting state. \uc0\u8232 \
+\uc0\u8232 \
+\'a0\'a0 Let me know if this addresses the question or if you have remaining concerns.\uc0\u8232 \
+\uc0\u8232 \
+DC \
+\
+==\
+\
+Thank you, I believe I have a better understanding now and have updated my solution.\
+\uc0\u8232 \
+Another question, since this is a stochastic model and we have not been provided a deterministic optimal path, I initially chose 'left' for (1,2) to move away from the cell with the negative reward.\
+This was based on my original assumption that the reward was for entering a cell but if I understand this correctly now, then a transition from (1,2) to (1,3) will have a reward of 0 since it is the reward for exiting (1,2), not entering (1,3).\
+This makes my choice of 'left' for an optimal path for (1,2) seem arbitrary and I could have chosen 'up' with equal likelihood using the Markov Decision Process because each has a value of 0 at V_0.\
+But, if I were to keep it as 'left', and evaluate this for one more iteration, then I would update the value of (1,2) based on the value in (2,2) resulting in T((1,2),up,(2,2)) having a higher value than T((1,2),left,(1,1)).\
+So, would we\'a0then update the optimal path to now be 'up' instead of 'left'?\
+\uc0\u8232 \
+Thank you very much for your help,\
+\uc0\u8232 \
+Marcus\
+\
+\
+==\
+\
+\pard\pardeftab720\sl280\sa240\partightenfactor0
+
+\f1 \cf2 \cb4 Marcus,\cb1 \
+\uc0\u8232 \
+\cb4 \'a0\'a0 Value iteration is a model-based approach to learning a policy. As a result, all of the value-learning is done offline. This contrasts with temporal difference learning and q-learning, which is done online (after an agent actually takes an action). With value iteration, you know T(s,a,s') and you know R(s,a,s'). You only have to learn V from these values.\cb1 \
+\uc0\u8232 \
+\cb4 \'a0\'a0 You probably already knew this (just a reminder) and are working on the optimal policy.\'a0 You are correct that transitioning from (1,2) to (1,3) is 0. However, remember that the optimal action is based on the final learned values (combined with the transition probabilities). From (1,2) the agent has four choices of moves. Each gets an immediate reward of 0 but a discounted reward based on the value of the state it ends up in. Can you envision (or calculate) the final values of each cell and from that determine the optimal move?\cb1 \
+\uc0\u8232 \
+\cb4 \'a0\'a0 Short answer: yes, the optimal path would be Up.\cb1 \
+\uc0\u8232 \
+\cb4 DC\cb1 \
+\
+\
+}
